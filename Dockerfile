@@ -43,6 +43,7 @@ RUN apt-get update && \
         libjpeg-dev \
         libfreetype6-dev \
         zlib1g-dev \
+        nano \
         && \
     # Install wkhtmltopdf from official source without MD5 verification
     curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb && \
