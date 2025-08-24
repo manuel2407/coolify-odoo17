@@ -60,8 +60,17 @@ if [ "$1" = 'odoo' ]; then
     
     if [ -z "$DB_EXISTS" ]; then
         echo "Database appears to be empty, initializing Odoo database..."
-        exec odoo -d "$DB_NAME" -i base --stop-after-init --no-http
+        odoo -d "$DB_NAME" -i base,web --stop-after-init --no-http
         echo "Database initialization completed"
+    else
+        # Check if web module is installed
+        WEB_INSTALLED=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT 1 FROM ir_module_module WHERE name='web' AND state='installed' LIMIT 1;" 2>/dev/null || echo "")
+        
+        if [ -z "$WEB_INSTALLED" ]; then
+            echo "Web module not installed, installing..."
+            odoo -d "$DB_NAME" -i web --stop-after-init --no-http
+            echo "Web module installation completed"
+        fi
     fi
 fi
 
