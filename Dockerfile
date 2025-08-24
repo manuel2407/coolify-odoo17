@@ -11,13 +11,12 @@ RUN apt-get update && \
         && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy custom configuration
-COPY ./odoo.conf /etc/odoo/
-COPY ./entrypoint.sh /
+# Copy custom configuration template
+COPY ./odoo.conf /etc/odoo/odoo.conf.template
+COPY ./init.sh /init.sh
 
 # Set permissions
-RUN chmod +x /entrypoint.sh && \
-    chown odoo:odoo /etc/odoo/odoo.conf
+RUN chmod +x /init.sh
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
@@ -26,5 +25,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
 # Switch back to odoo user
 USER odoo
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["odoo"]
+# Use original entrypoint but run our init first
+CMD ["/init.sh"]
