@@ -8,6 +8,16 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gettext-base \
         curl \
+        wget \
+        nano \
+        git \
+        unzip \
+        zip \
+        tar \
+        net-tools \
+        gh \
+        dnsutils \
+        iputils-ping \
         && \
     rm -rf /var/lib/apt/lists/*
 
