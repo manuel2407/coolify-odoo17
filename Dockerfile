@@ -44,6 +44,8 @@ RUN apt-get update && \
         libfreetype6-dev \
         zlib1g-dev \
         nano \
+        gettext-base \
+        curl \
         && \
     # Install wkhtmltopdf from official source without MD5 verification
     curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb && \
@@ -98,6 +100,10 @@ EXPOSE 8069 8071 8072
 
 # Set the default config file
 ENV ODOO_RC=/etc/odoo/odoo.conf
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8069/web/health || exit 1
 
 USER odoo
 
