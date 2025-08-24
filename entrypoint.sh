@@ -24,11 +24,6 @@ file_env() {
     unset "$fileVar"
 }
 
-# Allow the container to be started with `--user`
-if [ "$1" = 'odoo' ] && [ "$(id -u)" = '0' ]; then
-    exec gosu odoo "$0" "$@"
-fi
-
 # Set default values for database connection
 : ${DB_HOST:=db}
 : ${DB_PORT:=5432}
@@ -53,26 +48,5 @@ if [ "$1" = 'odoo' ]; then
     cp /tmp/odoo.conf /etc/odoo/odoo.conf
 fi
 
-# Initialize database if needed
-if [ "$1" = 'odoo' ]; then
-    # Check if database exists and has tables
-    DB_EXISTS=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT 1 FROM information_schema.tables WHERE table_name='ir_module_module' LIMIT 1;" 2>/dev/null || echo "")
-    
-    if [ -z "$DB_EXISTS" ]; then
-        echo "Database appears to be empty, initializing Odoo database..."
-        odoo -d "$DB_NAME" -i base,web --stop-after-init --no-http
-        echo "Database initialization completed"
-    else
-        # Check if web module is installed
-        WEB_INSTALLED=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT 1 FROM ir_module_module WHERE name='web' AND state='installed' LIMIT 1;" 2>/dev/null || echo "")
-        
-        if [ -z "$WEB_INSTALLED" ]; then
-            echo "Web module not installed, installing..."
-            odoo -d "$DB_NAME" -i web --stop-after-init --no-http
-            echo "Web module installation completed"
-        fi
-    fi
-fi
-
-# Execute the main command
-exec "$@"
+# Execute the main command with original entrypoint
+exec /entrypoint.sh "$@"
