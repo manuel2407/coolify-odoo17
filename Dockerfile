@@ -68,24 +68,28 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main' > /et
 # Install rtlcss (on Debian, use npm)
 RUN npm install -g rtlcss
 
-# Install Odoo
+# Install Odoo from source
 ENV ODOO_VERSION=17.0
-RUN pip3 install --no-cache-dir odoo==${ODOO_VERSION} && \
-    mkdir -p /usr/lib/python3/dist-packages/odoo/addons
+RUN git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.git /opt/odoo && \
+    pip3 install --no-cache-dir -r /opt/odoo/requirements.txt && \
+    pip3 install --no-cache-dir -e /opt/odoo && \
+    mkdir -p /mnt/extra-addons
 
 # Copy configuration
 COPY ./odoo.conf /etc/odoo/
 COPY ./entrypoint.sh /
 
-# Set permissions and prepare directories
-RUN chown odoo /etc/odoo/odoo.conf && \
+# Create odoo user and set permissions
+RUN useradd -r -s /bin/bash -d /opt/odoo -g root odoo && \
+    chown -R odoo:root /opt/odoo && \
+    chown odoo /etc/odoo/odoo.conf && \
     mkdir -p /mnt/extra-addons && \
-    chown -R odoo:odoo /mnt/extra-addons && \
+    chown -R odoo:root /mnt/extra-addons && \
     chmod +x /entrypoint.sh
 
 # Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN mkdir -p /var/lib/odoo && \
-    chown -R odoo:odoo /var/lib/odoo
+    chown -R odoo:root /var/lib/odoo
 
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
