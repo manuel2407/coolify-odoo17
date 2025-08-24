@@ -1,0 +1,43 @@
+# Additional Python dependencies for Odoo 17
+# These are commonly needed packages that might not be included in the base installation
+
+# PDF generation and manipulation
+reportlab>=3.6.0
+
+# Excel file handling
+openpyxl>=3.0.0
+xlsxwriter>=3.0.0
+
+# Image processing
+Pillow>=9.0.0
+
+# HTTP requests
+requests>=2.25.0
+
+# Date and time utilities
+python-dateutil>=2.8.0
+
+# Cryptography
+cryptography>=3.4.0
+
+# Additional formatting and utilities
+babel>=2.9.0
+markupsafe>=2.0.0
+
+# For better performance with large datasets
+psycopg2-binary>=2.8.6
+
+# For API integrations
+zeep>=4.0.0
+
+# For barcode generation
+python-barcode[images]>=0.13.0
+
+# For QR code generation  
+qrcode[pil]>=7.0.0
+
+# For phone number validation
+phonenumbers>=8.12.0
+
+# For email validation
+email-validator>=1.1.0

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  odoo:
+    build: .
+    container_name: odoo17
+    ports:
+      - "8069:8069"
+      - "8071:8071"
+      - "8072:8072"
+    environment:
+      # Database configuration
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=odoo
+      - DB_PASSWORD=odoo_password
+      - DB_NAME=postgres
+      
+      # Optional email configuration
+      # - EMAIL_FROM=noreply@example.com
+      # - SMTP_SERVER=smtp.gmail.com
+      # - SMTP_PORT=587
+      # - SMTP_SSL=True
+      # - SMTP_USER=your_email@gmail.com
+      # - SMTP_PASSWORD=your_app_password
+      
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./addons:/mnt/extra-addons
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  # Local database for testing (remove this when using external database)
+  db:
+    image: postgres:15
+    container_name: odoo17_db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo_password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+
+volumes:
+  odoo-data:
+    driver: local
+  db-data:
+    driver: local
