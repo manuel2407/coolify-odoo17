@@ -18,5 +18,16 @@ done
 # Process configuration template with environment variables
 envsubst < /etc/odoo/odoo.conf.template > /etc/odoo/odoo.conf
 
-# Start Odoo with the original entrypoint
+# Check if database needs initialization
+DB_INITIALIZED=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT 1 FROM information_schema.tables WHERE table_name='ir_module_module' LIMIT 1;" 2>/dev/null || echo "")
+
+if [ -z "$DB_INITIALIZED" ]; then
+    echo "Database needs initialization. Initializing with base modules..."
+    # Initialize database with base modules
+    /entrypoint.sh odoo -d "$DB_NAME" -i base,web --stop-after-init --no-http
+    echo "Database initialization completed"
+fi
+
+# Start Odoo normally
+echo "Starting Odoo..."
 exec /entrypoint.sh odoo
