@@ -102,8 +102,8 @@ EXPOSE 8069 8071 8072
 ENV ODOO_RC=/etc/odoo/odoo.conf
 
 # Add healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8069/web/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
+    CMD curl -f http://localhost:8069/web/database/selector || exit 1
 
 USER odoo
 

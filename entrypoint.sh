@@ -53,5 +53,17 @@ if [ "$1" = 'odoo' ]; then
     cp /tmp/odoo.conf /etc/odoo/odoo.conf
 fi
 
+# Initialize database if needed
+if [ "$1" = 'odoo' ]; then
+    # Check if database exists and has tables
+    DB_EXISTS=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT 1 FROM information_schema.tables WHERE table_name='ir_module_module' LIMIT 1;" 2>/dev/null || echo "")
+    
+    if [ -z "$DB_EXISTS" ]; then
+        echo "Database appears to be empty, initializing Odoo database..."
+        exec odoo -d "$DB_NAME" -i base --stop-after-init --no-http
+        echo "Database initialization completed"
+    fi
+fi
+
 # Execute the main command
 exec "$@"
