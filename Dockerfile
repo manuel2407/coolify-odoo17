@@ -5,7 +5,7 @@ LABEL maintainer="Odoo S.A. <info@odoo.com>"
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
 # Generate locale C.UTF-8 for postgres and general locale data
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update && \
@@ -68,14 +68,9 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main' > /et
 RUN npm install -g rtlcss
 
 # Install Odoo
-ENV ODOO_VERSION 17.0
-ARG ODOO_RELEASE=20240909
-ARG ODOO_SHA=6e3d6b2e5b3f3e3b8b8b8b8b8b8b8b8b8b8b8b8b
-RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb && \
-    dpkg --force-depends -i odoo.deb && \
-    apt-get update && \
-    apt-get -y install -f --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/* odoo.deb
+ENV ODOO_VERSION=17.0
+RUN pip3 install --no-cache-dir odoo==${ODOO_VERSION} && \
+    mkdir -p /usr/lib/python3/dist-packages/odoo/addons
 
 # Copy configuration
 COPY ./odoo.conf /etc/odoo/
@@ -97,7 +92,7 @@ VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 EXPOSE 8069 8071 8072
 
 # Set the default config file
-ENV ODOO_RC /etc/odoo/odoo.conf
+ENV ODOO_RC=/etc/odoo/odoo.conf
 
 USER odoo
 
