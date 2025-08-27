@@ -22,12 +22,12 @@ envsubst < /etc/odoo/odoo.conf.template > /etc/odoo/odoo.conf
 DB_INITIALIZED=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT 1 FROM information_schema.tables WHERE table_name='ir_module_module' LIMIT 1;" 2>/dev/null || echo "")
 
 if [ -z "$DB_INITIALIZED" ]; then
-    echo "Database needs initialization. Initializing with base modules..."
-    # Initialize database with base modules
+    echo "Database needs initialization. Installing base modules..."
+    # Initialize database with essential modules
     /entrypoint.sh odoo -d "$DB_NAME" -i base,web --stop-after-init --no-http
-    echo "Database initialization completed"
+    echo "Database initialization completed successfully"
 fi
 
-# Start Odoo normally
-echo "Starting Odoo..."
+# Start Odoo application
+echo "Starting Odoo server..."
 exec /entrypoint.sh odoo

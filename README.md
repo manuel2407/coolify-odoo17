@@ -1,159 +1,159 @@
 # Odoo 17 Docker Image for Coolify
 
-Esta imagen de Docker está optimizada para ejecutar Odoo 17 en Coolify con una base de datos externa.
+This Docker image is optimized to run Odoo 17 on Coolify with an external database.
 
-## Características
+## Features
 
 - ✅ Odoo 17 Community Edition
-- ✅ Todas las dependencias necesarias incluidas
-- ✅ Configuración optimizada para base de datos externa
-- ✅ Soporte para variables de entorno
-- ✅ Script de inicialización automática
-- ✅ Volúmenes persistentes para addons y datos
-- ✅ Configuración de proxy para reverse proxies
-- ✅ Soporte para Docker secrets
+- ✅ All necessary dependencies included
+- ✅ Optimized configuration for external database
+- ✅ Full environment variables support
+- ✅ Automatic initialization script
+- ✅ Persistent volumes for addons and data
+- ✅ Proxy configuration for reverse proxies
+- ✅ Docker secrets support
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 odoo17/
-├── Dockerfile              # Imagen principal de Odoo 17
-├── docker-compose.yml      # Para pruebas locales
-├── odoo.conf              # Configuración de Odoo
-├── entrypoint.sh          # Script de inicialización
-├── requirements.txt       # Dependencias Python adicionales
-├── addons/                # Directorio para addons personalizados (crear si es necesario)
-└── README.md              # Este archivo
+├── Dockerfile              # Main Odoo 17 image
+├── docker-compose.yml      # For local testing
+├── odoo.conf              # Odoo configuration
+├── init.sh                # Initialization script
+├── requirements.txt       # Additional Python dependencies
+├── addons/                # Directory for custom addons (create if needed)
+└── README.md              # This file
 ```
 
-## Despliegue en Coolify
+## Coolify Deployment
 
-### 1. Preparación del Repositorio
+### 1. Repository Setup
 
-1. Sube este proyecto a tu repositorio Git (GitHub, GitLab, etc.)
-2. Asegúrate de que todos los archivos estén en la raíz del repositorio
+1. Upload this project to your Git repository (GitHub, GitLab, etc.)
+2. Make sure all files are in the repository root
 
-### 2. Configuración en Coolify
+### 2. Coolify Configuration
 
-1. **Crear nueva aplicación:**
-   - Ve a tu panel de Coolify
-   - Crea una nueva aplicación
-   - Selecciona "Docker Compose" o "Dockerfile"
-   - Conecta tu repositorio
+1. **Create new application:**
+   - Go to your Coolify panel
+   - Create a new application
+   - Select "Docker Compose" or "Dockerfile"
+   - Connect your repository
 
-2. **Variables de entorno requeridas:**
+2. **Required environment variables:**
    ```
-   DB_HOST=tu-servidor-postgresql.com
+   DB_HOST=your-postgresql-server.com
    DB_PORT=5432
-   DB_USER=tu_usuario_odoo
-   DB_PASSWORD=tu_password_seguro
-   DB_NAME=tu_base_datos_odoo
+   DB_USER=your_odoo_user
+   DB_PASSWORD=your_secure_password
+   DB_NAME=your_odoo_database
    ```
 
-3. **Variables de entorno recomendadas:**
+3. **Recommended environment variables:**
    ```
-   # Contraseña master de administración (ALTAMENTE RECOMENDADO)
-   ADMIN_PASSWD=tu_password_master_super_seguro
+   # Master admin password (HIGHLY RECOMMENDED)
+   ADMIN_PASSWD=your_super_secure_master_password
    ```
 
-4. **Variables de entorno opcionales:**
+4. **Optional environment variables:**
    ```
-   # Configuración de email (opcional)
-   EMAIL_FROM=noreply@tudominio.com
+   # Email configuration (optional)
+   EMAIL_FROM=noreply@yourdomain.com
    SMTP_SERVER=smtp.gmail.com
    SMTP_PORT=587
    SMTP_SSL=True
-   SMTP_USER=tu_email@gmail.com
-   SMTP_PASSWORD=tu_app_password
+   SMTP_USER=your_email@gmail.com
+   SMTP_PASSWORD=your_app_password
    ```
 
-5. **Puertos:**
-   - Puerto principal: `8069`
-   - Puerto de chat en vivo: `8072` (opcional)
+5. **Ports:**
+   - Main port: `8069`
+   - Live chat port: `8072` (optional)
 
-6. **Volúmenes persistentes:**
-   - `/var/lib/odoo` - Datos de Odoo (filestore, sesiones, etc.)
-   - `/mnt/extra-addons` - Addons personalizados
+6. **Persistent volumes:**
+   - `/var/lib/odoo` - Odoo data (filestore, sessions, etc.)
+   - `/mnt/extra-addons` - Custom addons
 
-### 3. Base de Datos Externa
+### 3. External Database
 
-Asegúrate de que tu base de datos PostgreSQL:
+Make sure your PostgreSQL database:
 
-- ✅ Sea accesible desde Coolify
-- ✅ Tenga un usuario dedicado para Odoo
-- ✅ Tenga una base de datos creada para Odoo
-- ✅ Permita conexiones desde la IP de Coolify
+- ✅ Is accessible from Coolify
+- ✅ Has a dedicated user for Odoo
+- ✅ Has a database created for Odoo
+- ✅ Allows connections from Coolify's IP
 
-**Comandos SQL para preparar la base de datos:**
+**SQL commands to prepare the database:**
 
 ```sql
--- Crear usuario para Odoo
-CREATE USER odoo_user WITH PASSWORD 'password_seguro';
+-- Create user for Odoo
+CREATE USER odoo_user WITH PASSWORD 'secure_password';
 
--- Crear base de datos
+-- Create database
 CREATE DATABASE odoo_production OWNER odoo_user;
 
--- Otorgar permisos
+-- Grant permissions
 GRANT ALL PRIVILEGES ON DATABASE odoo_production TO odoo_user;
 GRANT CREATE ON SCHEMA public TO odoo_user;
 ```
 
-## Pruebas Locales
+## Local Testing
 
-Para probar la imagen localmente antes del despliegue:
+To test the image locally before deployment:
 
 ```bash
-# Clonar el repositorio
-git clone <tu-repositorio>
+# Clone the repository
+git clone <your-repository>
 cd odoo17
 
-# Crear directorio para addons (si no existe)
+# Create directory for addons (if it doesn't exist)
 mkdir -p addons
 
-# Ejecutar con docker-compose (incluye base de datos local)
+# Run with docker-compose (includes local database)
 docker-compose up -d
 
-# Ver logs
+# View logs
 docker-compose logs -f odoo
 
-# Acceder a Odoo
+# Access Odoo
 # http://localhost:8069
 ```
 
-**Credenciales por defecto para pruebas locales:**
+**Default credentials for local testing:**
 - URL: http://localhost:8069
-- Base de datos: postgres
+- Database: postgres
 - Email: admin@example.com
 - Password: admin
 
-## Credenciales de Acceso
+## Access Credentials
 
-### Usuario Administrador por Defecto
-- **Usuario:** `admin`
-- **Contraseña:** `admin`
+### Default Administrator User
+- **Username:** `admin`
+- **Password:** `admin`
 
-⚠️ **IMPORTANTE:** Cambia esta contraseña inmediatamente después del primer acceso.
+⚠️ **IMPORTANT:** Change this password immediately after first access.
 
-### Contraseña Master (Admin Password)
-Si configuraste la variable `ADMIN_PASSWD`, esta contraseña te permitirá:
-- Crear y eliminar bases de datos
-- Acceder a funciones administrativas avanzadas
-- Gestionar backups y restauraciones
-- Acceso completo al sistema
+### Master Password (Admin Password)
+If you configured the `ADMIN_PASSWD` variable, this password will allow you to:
+- Create and delete databases
+- Access advanced administrative functions
+- Manage backups and restorations
+- Full system access
 
-**Acceso:** Ve a `/web/database/manager` para usar la contraseña master.
+**Access:** Go to `/web/database/manager` to use the master password.
 
-## Configuración Avanzada
+## Advanced Configuration
 
-### Addons Personalizados
+### Custom Addons
 
-1. Crea una carpeta `addons` en tu repositorio
-2. Coloca tus addons personalizados ahí
-3. Coolify los montará automáticamente en `/mnt/extra-addons`
+1. Create an `addons` folder in your repository
+2. Place your custom addons there
+3. Coolify will automatically mount them to `/mnt/extra-addons`
 
-### Configuración de Workers
+### Workers Configuration
 
-Para sitios con mucho tráfico, modifica `odoo.conf`:
+For high-traffic sites, modify `odoo.conf`:
 
 ```ini
 workers = 4
@@ -162,44 +162,44 @@ limit_memory_hard = 2684354560
 limit_memory_soft = 2147483648
 ```
 
-### Configuración de Email
+### Email Configuration
 
-Configura las variables de entorno de SMTP en Coolify para habilitar el envío de emails.
+Configure SMTP environment variables in Coolify to enable email sending.
 
 ## Troubleshooting
 
-### Problema: No se puede conectar a la base de datos
+### Problem: Cannot connect to database
 
-**Solución:**
-1. Verifica las variables de entorno de base de datos
-2. Asegúrate de que la base de datos sea accesible
-3. Revisa los logs: `docker logs <container-name>`
+**Solution:**
+1. Verify database environment variables
+2. Make sure the database is accessible
+3. Check logs: `docker logs <container-name>`
 
-### Problema: Odoo no inicia
+### Problem: Odoo doesn't start
 
-**Solución:**
-1. Verifica que la base de datos tenga los permisos correctos
-2. Revisa los logs del contenedor
-3. Asegúrate de que el puerto 8069 esté disponible
+**Solution:**
+1. Verify that the database has correct permissions
+2. Check container logs
+3. Make sure port 8069 is available
 
-### Problema: Los addons no se cargan
+### Problem: Addons don't load
 
-**Solución:**
-1. Verifica que estén en la carpeta `addons`
-2. Reinicia el contenedor
-3. Actualiza la lista de módulos en Odoo
+**Solution:**
+1. Verify they are in the `addons` folder
+2. Restart the container
+3. Update the module list in Odoo
 
-## Recursos Adicionales
+## Additional Resources
 
-- [Documentación oficial de Odoo](https://www.odoo.com/documentation/17.0/)
-- [Documentación de Coolify](https://coolify.io/docs)
-- [Configuración de PostgreSQL para Odoo](https://www.odoo.com/documentation/17.0/administration/install/install.html#postgresql)
+- [Official Odoo Documentation](https://www.odoo.com/documentation/17.0/)
+- [Coolify Documentation](https://coolify.io/docs)
+- [PostgreSQL Configuration for Odoo](https://www.odoo.com/documentation/17.0/administration/install/install.html#postgresql)
 
-## Soporte
+## Support
 
-Si encuentras problemas:
+If you encounter issues:
 
-1. Revisa los logs del contenedor
-2. Verifica la configuración de la base de datos
-3. Asegúrate de que todas las variables de entorno estén configuradas
-4. Consulta la documentación oficial de Odoo y Coolify
+1. Check container logs
+2. Verify database configuration
+3. Make sure all environment variables are set
+4. Consult official Odoo and Coolify documentation

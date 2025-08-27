@@ -3,7 +3,7 @@ FROM odoo:17
 # Switch to root to install additional packages
 USER root
 
-# Install additional packages if needed
+# Install required system packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gettext-base \
@@ -21,19 +21,19 @@ RUN apt-get update && \
         && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy custom configuration template
+# Copy configuration template and initialization script
 COPY ./odoo.conf /etc/odoo/odoo.conf.template
 COPY ./init.sh /init.sh
 
-# Set permissions
+# Set executable permissions
 RUN chmod +x /init.sh
 
-# Add healthcheck
+# Configure healthcheck for Coolify
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
     CMD curl -f http://localhost:8069/web/database/selector || exit 1
 
-# Switch back to odoo user
+# Switch back to odoo user for security
 USER odoo
 
-# Use original entrypoint but run our init first
+# Use custom initialization script
 CMD ["/init.sh"]
