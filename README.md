@@ -50,7 +50,13 @@ odoo17/
    DB_NAME=tu_base_datos_odoo
    ```
 
-3. **Variables de entorno opcionales:**
+3. **Variables de entorno recomendadas:**
+   ```
+   # Contraseña master de administración (ALTAMENTE RECOMENDADO)
+   ADMIN_PASSWD=tu_password_master_super_seguro
+   ```
+
+4. **Variables de entorno opcionales:**
    ```
    # Configuración de email (opcional)
    EMAIL_FROM=noreply@tudominio.com
@@ -59,16 +65,13 @@ odoo17/
    SMTP_SSL=True
    SMTP_USER=tu_email@gmail.com
    SMTP_PASSWORD=tu_app_password
-   
-   # Configuración adicional
-   ADMIN_PASSWD=tu_password_admin_odoo
    ```
 
-4. **Puertos:**
+5. **Puertos:**
    - Puerto principal: `8069`
    - Puerto de chat en vivo: `8072` (opcional)
 
-5. **Volúmenes persistentes:**
+6. **Volúmenes persistentes:**
    - `/var/lib/odoo` - Datos de Odoo (filestore, sesiones, etc.)
    - `/mnt/extra-addons` - Addons personalizados
 
@@ -122,6 +125,23 @@ docker-compose logs -f odoo
 - Base de datos: postgres
 - Email: admin@example.com
 - Password: admin
+
+## Credenciales de Acceso
+
+### Usuario Administrador por Defecto
+- **Usuario:** `admin`
+- **Contraseña:** `admin`
+
+⚠️ **IMPORTANTE:** Cambia esta contraseña inmediatamente después del primer acceso.
+
+### Contraseña Master (Admin Password)
+Si configuraste la variable `ADMIN_PASSWD`, esta contraseña te permitirá:
+- Crear y eliminar bases de datos
+- Acceder a funciones administrativas avanzadas
+- Gestionar backups y restauraciones
+- Acceso completo al sistema
+
+**Acceso:** Ve a `/web/database/manager` para usar la contraseña master.
 
 ## Configuración Avanzada
 
