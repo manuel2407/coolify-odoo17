@@ -26,8 +26,13 @@ services:
       - "8069:8069"
     environment:
       # Coolify: set your domain here (or via UI) to proxy to container port 8069
-      # Leave empty for plug-and-play on IP:port, or set e.g. https://odoo.example.com
       SERVICE_URL_ODOO_8069: ${DOMAIN:-}
+      # Official odoo image variables (init.sh also maps DB_* to these)
+      HOST: db
+      PORT: "5432"
+      USER: ${DB_USER:-odoo}
+      PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Coolify or .env}
+      # Internal/config naming
       DB_HOST: db
       DB_PORT: "5432"
       DB_USER: ${DB_USER:-odoo}
