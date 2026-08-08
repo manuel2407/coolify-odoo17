@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   db:
     image: postgres:15
@@ -7,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: ${DB_NAME:-odoo}
       POSTGRES_USER: ${DB_USER:-odoo}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-odoo_password}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Coolify or .env}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - db-data:/var/lib/postgresql/data/pgdata
@@ -17,10 +15,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-    # PostgreSQL stays on the internal Docker network only.
-    # For local debugging you can temporarily expose it:
-    # ports:
-    #   - "5432:5432"
 
   odoo:
     build: .
@@ -31,14 +25,15 @@ services:
     ports:
       - "8069:8069"
     environment:
-      # Coolify: generates/assigns a public domain and proxies to container port 8069
-      SERVICE_URL_ODOO_8069: /
+      # Coolify: set your domain here (or via UI) to proxy to container port 8069
+      # Leave empty for plug-and-play on IP:port, or set e.g. https://odoo.example.com
+      SERVICE_URL_ODOO_8069: ${DOMAIN:-}
       DB_HOST: db
       DB_PORT: "5432"
       DB_USER: ${DB_USER:-odoo}
-      DB_PASSWORD: ${DB_PASSWORD:-odoo_password}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Coolify or .env}
       DB_NAME: ${DB_NAME:-odoo}
-      ADMIN_PASSWD: ${ADMIN_PASSWD:-changeme}
+      ADMIN_PASSWD: ${ADMIN_PASSWD:?Set ADMIN_PASSWD in Coolify or .env}
     volumes:
       - odoo-data:/var/lib/odoo
       - ./addons:/mnt/extra-addons

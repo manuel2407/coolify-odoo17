@@ -1,39 +1,25 @@
-FROM odoo:17
+FROM odoo:17.0
 
-# Switch to root to install additional packages
 USER root
 
-# Install required system packages
+# Keep runtime lean: envsubst (gettext) + psql checks + curl for healthcheck
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gettext-base \
+        postgresql-client \
         curl \
-        wget \
-        nano \
-        git \
-        unzip \
-        zip \
-        tar \
-        net-tools \
-        gh \
-        dnsutils \
-        iputils-ping \
-        && \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy configuration template and initialization script
 COPY ./odoo.conf /etc/odoo/odoo.conf.template
 COPY ./init.sh /init.sh
-
-# Set executable permissions
 RUN chmod +x /init.sh
 
-# Configure healthcheck for Coolify
-HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
-    CMD curl -f http://localhost:8069/web/database/selector || exit 1
+EXPOSE 8069
 
-# Switch back to odoo user for security
+# Coolify healthcheck: app must actually serve HTTP
+HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=10 \
+    CMD curl -fsS -o /dev/null http://localhost:8069/web/login || exit 1
+
 USER odoo
 
-# Use custom initialization script
 CMD ["/init.sh"]
