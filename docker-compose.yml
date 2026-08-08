@@ -31,6 +31,8 @@ services:
     ports:
       - "8069:8069"
     environment:
+      # Coolify: generates/assigns a public domain and proxies to container port 8069
+      SERVICE_URL_ODOO_8069: /
       DB_HOST: db
       DB_PORT: "5432"
       DB_USER: ${DB_USER:-odoo}
