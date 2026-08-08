@@ -7,7 +7,7 @@ Based on the official `odoo:17` image, plus a custom startup script, environment
 ## Features
 
 - Odoo 17 Community Edition
-- Integrated PostgreSQL 15 (`db` service in `docker-compose.yml`)
+- Integrated PostgreSQL 15 (`db` service in `docker-compose.yaml`)
 - Wait-for-database startup with timeout
 - Auto-initialization of an empty database (`base` + `web`)
 - Configuration generated from environment variables (`envsubst`)
@@ -20,7 +20,7 @@ Based on the official `odoo:17` image, plus a custom startup script, environment
 ```
 .
 ├── Dockerfile           # Odoo image build definition
-├── docker-compose.yml   # Odoo + PostgreSQL stack (use this in Coolify)
+├── docker-compose.yaml  # Odoo + PostgreSQL stack (use this in Coolify)
 ├── .env.example         # Example environment variables
 ├── odoo.conf            # Odoo config template (env placeholders)
 ├── init.sh              # Odoo container entrypoint / startup script

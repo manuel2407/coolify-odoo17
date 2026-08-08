@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Defaults match the integrated PostgreSQL service in docker-compose.yml
+# Defaults match the integrated PostgreSQL service in docker-compose.yaml
 : ${DB_HOST:=db}
 : ${DB_PORT:=5432}
 : ${DB_USER:=odoo}
