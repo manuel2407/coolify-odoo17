@@ -1,42 +1,46 @@
-version: '3.8'
+version: "3.8"
 
 services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-odoo}
+      POSTGRES_USER: ${DB_USER:-odoo}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-odoo_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    # PostgreSQL stays on the internal Docker network only.
+    # For local debugging you can temporarily expose it:
+    # ports:
+    #   - "5432:5432"
+
   odoo:
     build: .
-    container_name: odoo17
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8069:8069"
     environment:
-      # Database configuration
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=odoo
-      - DB_PASSWORD=odoo_password
-      - DB_NAME=postgres
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER:-odoo}
+      DB_PASSWORD: ${DB_PASSWORD:-odoo_password}
+      DB_NAME: ${DB_NAME:-odoo}
+      ADMIN_PASSWD: ${ADMIN_PASSWD:-changeme}
     volumes:
       - odoo-data:/var/lib/odoo
       - ./addons:/mnt/extra-addons
-    depends_on:
-      - db
-    restart: unless-stopped
-
-  # Local database for testing (remove this when using external database)
-  db:
-    image: postgres:15
-    container_name: odoo17_db
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=odoo
-      - POSTGRES_PASSWORD=odoo_password
-      - PGDATA=/var/lib/postgresql/data/pgdata
-    volumes:
-      - db-data:/var/lib/postgresql/data/pgdata
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
 
 volumes:
   odoo-data:
-    driver: local
   db-data:
-    driver: local
